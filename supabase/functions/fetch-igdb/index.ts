@@ -31,24 +31,40 @@ Deno.serve(async (req) => {
     const json = { headers: { ...cors, 'Content-Type': 'application/json' } }
 
     if (type === 'console') {
-      const body = `search "${name}"; fields name,summary,first_release_date,platform_logo.image_id; limit 1;`
-      const res = await fetch('https://api.igdb.com/v4/platforms', { method: 'POST', headers: igdbHeaders, body })
-      const data = await res.json()
+      const tgdbKey = Deno.env.get('THEGAMESDB_API_KEY')!
 
-      if (!data?.length) return new Response(JSON.stringify({ found: false }), json)
+      const searchRes = await fetch(
+        `https://api.thegamesdb.net/v1/Platforms/ByName?name=${encodeURIComponent(name)}&apikey=${tgdbKey}`
+      )
+      const searchData = await searchRes.json()
 
-      const item = data[0]
-      const coverUrl = item.platform_logo?.image_id
-        ? `https://images.igdb.com/igdb/image/upload/t_logo_med/${item.platform_logo.image_id}.png`
-        : null
+      const platforms = searchData.data?.platforms
+      if (!platforms || Object.keys(platforms).length === 0) {
+        return new Response(JSON.stringify({ found: false }), json)
+      }
+
+      const platform = Object.values(platforms)[0] as any
+      const platformId = platform.id
+
+      const imgRes = await fetch(
+        `https://api.thegamesdb.net/v1/Platforms/Images?platforms_id=${platformId}&filter[type]=fanart,banner,boxart&apikey=${tgdbKey}`
+      )
+      const imgData = await imgRes.json()
+
+      const baseUrl = imgData.include?.images?.base_url?.large ?? 'https://cdn.thegamesdb.net/images/large/'
+      const images: any[] = imgData.data?.images?.[String(platformId)] ?? []
+      const image = images.find(i => i.type === 'fanart')
+        ?? images.find(i => i.type === 'banner')
+        ?? images.find(i => i.type === 'boxart')
+        ?? null
 
       return new Response(JSON.stringify({
         found: true,
-        igdb_id: item.id,
-        name: item.name,
-        summary: item.summary ?? null,
-        cover_url: coverUrl,
-        year: item.first_release_date ? new Date(item.first_release_date * 1000).getFullYear() : null,
+        igdb_id: platformId,
+        name: platform.name,
+        summary: platform.overview ?? null,
+        cover_url: image ? `${baseUrl}${image.filename}` : null,
+        year: platform.release_date ? new Date(platform.release_date).getFullYear() : null,
       }), json)
     } else {
       const body = `search "${name}"; fields name,summary,first_release_date,cover.image_id,genres.name,platforms.name; limit 5;`
