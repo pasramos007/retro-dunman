@@ -32,7 +32,7 @@ export default function AddPage() {
   const [preview, setPreview] = useState(null)
   const [imageData, setImageData] = useState(null)
   const [igdbData, setIgdbData] = useState(null)
-  const [form, setForm] = useState({ type: 'game', name: '', platform: '', brand: '', year: '', genre: '', console_id: '' })
+  const [form, setForm] = useState({ type: 'game', name: '', platform: '', brand: '', year: '', genre: '', console_id: '', cover_url: '' })
   const [consoles, setConsoles] = useState([])
   const [error, setError] = useState(null)
 
@@ -76,6 +76,7 @@ export default function AddPage() {
         year: String(igdb?.year || id.year || ''),
         genre: igdb?.genres?.[0] || '',
         console_id: matchedConsole?.id || '',
+        cover_url: igdb?.cover_url || '',
       })
       setStep(STEP.EDITING)
     } catch (e) {
@@ -90,10 +91,10 @@ export default function AddPage() {
     try {
       const year = parseInt(form.year) || null
       if (form.type === 'console') {
-        await saveConsole({ name: form.name, brand: form.brand, platform: form.platform, year, igdb_id: igdbData?.igdb_id || null, cover_url: igdbData?.cover_url || null })
+        await saveConsole({ name: form.name, brand: form.brand, platform: form.platform, year, igdb_id: igdbData?.igdb_id || null, cover_url: form.cover_url || null })
         navigate('/')
       } else {
-        await saveGame({ title: form.name, platform: form.platform, genre: form.genre, year, igdb_id: igdbData?.igdb_id || null, cover_url: igdbData?.cover_url || null, console_id: form.console_id || null })
+        await saveGame({ title: form.name, platform: form.platform, genre: form.genre, year, igdb_id: igdbData?.igdb_id || null, cover_url: form.cover_url || null, console_id: form.console_id || null })
         navigate(form.console_id ? `/consoles/${form.console_id}` : '/games')
       }
     } catch (e) {
@@ -174,13 +175,14 @@ export default function AddPage() {
 
         {step === STEP.EDITING && (
           <div className="flex flex-col gap-4">
-            {igdbData?.cover_url && (
+            {form.cover_url && (
               <img
-                src={igdbData.cover_url}
+                src={form.cover_url}
                 alt="Cover"
                 className="w-28 aspect-[3/4] object-cover rounded-xl mx-auto shadow-xl shadow-black/50"
               />
             )}
+            <Field label="Artwork URL (optional)" {...field('cover_url')} placeholder="https://..." />
 
             <div className="flex bg-zinc-900 rounded-xl p-1 border border-zinc-800">
               {['console', 'game'].map(t => (
@@ -232,13 +234,14 @@ export default function AddPage() {
   )
 }
 
-function Field({ label, ...props }) {
+function Field({ label, placeholder, ...props }) {
   return (
     <div className="flex flex-col gap-1.5">
       <label className="text-zinc-400 text-sm">{label}</label>
       <input
         {...props}
-        className="bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-zinc-100 focus:outline-none focus:border-violet-500 transition-colors"
+        placeholder={placeholder}
+        className="bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-violet-500 transition-colors"
       />
     </div>
   )
