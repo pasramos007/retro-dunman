@@ -15,7 +15,7 @@ Deno.serve(async (req) => {
 
     const msg = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 512,
+      max_tokens: 2048,
       messages: [
         {
           role: 'user',
@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
             },
             {
               type: 'text',
-              text: `Identify this physical retro gaming item from the photo. Return ONLY a JSON object with these fields:
+              text: `Identify ALL physical retro gaming items visible in this photo. Return ONLY a JSON array where each element represents one item with these fields:
 - type: "console" or "game"
 - name: exact product name (e.g. "Game Boy", "Tetris")
 - platform: gaming platform (e.g. "Game Boy", "NES", "PlayStation")
@@ -35,17 +35,18 @@ Deno.serve(async (req) => {
 - confidence: "high", "medium", or "low"
 - notes: condition, variant, or region notes (string or null)
 
-No markdown fences, no explanation — just the raw JSON object.`,
+If only one item is visible, return a single-element array.
+No markdown fences, no explanation — just the raw JSON array.`,
             },
           ],
         },
       ],
     })
 
-    const text = msg.content[0].type === 'text' ? msg.content[0].text.trim() : ''
+    const text = msg.content[0].type === 'text' ? msg.content[0].text.trim() : '[]'
     const result = JSON.parse(text)
 
-    return new Response(JSON.stringify(result), {
+    return new Response(JSON.stringify(Array.isArray(result) ? result : [result]), {
       headers: { ...cors, 'Content-Type': 'application/json' },
     })
   } catch (err) {
