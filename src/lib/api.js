@@ -79,6 +79,38 @@ export async function saveGame({ title, platform, genre, year, igdb_id, cover_ur
   return data
 }
 
+export async function getGame(id) {
+  const { data, error } = await supabase
+    .from('games')
+    .select('*, consoles(name)')
+    .eq('id', id)
+    .single()
+  if (error) throw new Error(error.message)
+  return data
+}
+
+export async function updateConsole(id, { name, brand, platform, year, igdb_id, cover_url }) {
+  const { data, error } = await supabase
+    .from('consoles')
+    .update({ name, brand, platform, year, igdb_id, cover_url })
+    .eq('id', id)
+    .select()
+    .single()
+  if (error) throw new Error(error.message)
+  return data
+}
+
+export async function updateGame(id, { title, platform, genre, year, igdb_id, cover_url, console_id }) {
+  const { data, error } = await supabase
+    .from('games')
+    .update({ title, platform, genre, year, igdb_id, cover_url, console_id: console_id || null })
+    .eq('id', id)
+    .select()
+    .single()
+  if (error) throw new Error(error.message)
+  return data
+}
+
 export async function deleteConsole(id) {
   const { error } = await supabase.from('consoles').delete().eq('id', id)
   if (error) throw new Error(error.message)

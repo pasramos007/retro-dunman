@@ -7,6 +7,7 @@ import ConsolesPage from './pages/ConsolesPage'
 import AllGamesPage from './pages/AllGamesPage'
 import ConsoleGamesPage from './pages/ConsoleGamesPage'
 import AddPage from './pages/AddPage'
+import EditPage from './pages/EditPage'
 
 export default function App() {
   const [session, setSession] = useState(undefined)
@@ -34,6 +35,8 @@ export default function App() {
           <Route path="/games" element={<AllGamesPage />} />
           <Route path="/consoles/:id" element={<ConsoleGamesPage />} />
           <Route path="/add" element={<AddPage />} />
+          <Route path="/consoles/:id/edit" element={<EditPage type="console" />} />
+          <Route path="/games/:id/edit" element={<EditPage type="game" />} />
         </Route>
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
