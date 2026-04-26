@@ -32,7 +32,7 @@ export default function ConsolesPage() {
           {consoles.length === 0 ? 'No consoles yet. Tap + to add one.' : 'No consoles match your search.'}
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-3 mt-3">
+        <div className="grid grid-cols-3 gap-2 mt-3">
           {filtered.map(c => (
             <ConsoleCard key={c.id} console={c} onClick={() => navigate(`/consoles/${c.id}`)} />
           ))}

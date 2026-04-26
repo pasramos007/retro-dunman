@@ -31,7 +31,7 @@ export async function getConsolesWithGameCount() {
   const { data, error } = await supabase
     .from('consoles')
     .select('*, games(count)')
-    .order('name')
+    .order('year', { ascending: true, nullsFirst: false })
   if (error) throw new Error(error.message)
   return data
 }

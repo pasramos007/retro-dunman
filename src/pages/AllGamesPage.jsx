@@ -23,7 +23,9 @@ export default function AllGamesPage() {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-bold text-zinc-100 mb-3">All Games</h2>
+      <h2 className="text-xl font-bold text-zinc-100 mb-3">
+        All Games <span className="text-zinc-500 font-normal text-base">({games.length})</span>
+      </h2>
       <SearchBar value={query} onChange={setQuery} placeholder="Filter games…" />
       {filtered.length === 0 ? (
         <div className="text-center py-20 text-zinc-500 text-sm">
