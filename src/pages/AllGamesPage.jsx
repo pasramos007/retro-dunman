@@ -32,7 +32,7 @@ export default function AllGamesPage() {
           {games.length === 0 ? 'No games yet. Tap + to add one.' : 'No games match your search.'}
         </div>
       ) : (
-        <div className="grid grid-cols-3 gap-2 mt-3">
+        <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-2 mt-3">
           {filtered.map(g => <GameCard key={g.id} game={g} />)}
         </div>
       )}

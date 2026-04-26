@@ -78,7 +78,7 @@ export default function ConsoleGamesPage() {
             {games.length === 0 ? 'No games for this console yet.' : 'No games match your search.'}
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-2">
             {filtered.map(g => <GameCard key={g.id} game={g} />)}
           </div>
         )}

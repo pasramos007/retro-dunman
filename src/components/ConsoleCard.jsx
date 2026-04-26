@@ -19,7 +19,9 @@ export default function ConsoleCard({ console: item, onClick }) {
       </div>
       <div className="px-2.5 py-2 flex items-center justify-between gap-2">
         <div className="min-w-0">
-          <p className="text-zinc-100 font-semibold text-sm leading-tight truncate">{item.name}</p>
+          <p className="text-zinc-100 font-semibold text-sm leading-tight truncate">
+            {item.name}{item.year ? ` (${item.year})` : ''}
+          </p>
           <p className="text-zinc-500 text-xs mt-0.5">
             {gameCount} game{gameCount !== 1 ? 's' : ''}
           </p>
