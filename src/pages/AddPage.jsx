@@ -75,7 +75,14 @@ export default function AddPage() {
     setStep(STEP.IDENTIFYING)
     setError(null)
     try {
-      const identified = await identifyItem(imageData.base64, imageData.mimeType)
+      const raw = await identifyItem(imageData.base64, imageData.mimeType)
+      const identified = Array.isArray(raw) ? raw : [raw]
+
+      if (identified.length === 0) {
+        setError('Could not identify any items. Try a clearer or closer shot.')
+        setStep(STEP.PREVIEW)
+        return
+      }
 
       // Fetch IGDB data for all items in parallel
       const igdbResults = await Promise.all(
