@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Search } from 'lucide-react'
 import { getConsole, getGames } from '../lib/api'
 import GameCard from '../components/GameCard'
 
@@ -9,6 +9,7 @@ export default function ConsoleGamesPage() {
   const navigate = useNavigate()
   const [console_, setConsole] = useState(null)
   const [games, setGames] = useState([])
+  const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -25,6 +26,8 @@ export default function ConsoleGamesPage() {
       </div>
     )
   }
+
+  const filtered = games.filter(g => g.title.toLowerCase().includes(query.toLowerCase()))
 
   return (
     <div>
@@ -54,16 +57,29 @@ export default function ConsoleGamesPage() {
       </div>
 
       <div className="p-4">
-        <h3 className="text-zinc-300 font-semibold mb-3">
-          Games <span className="text-zinc-500 font-normal">({games.length})</span>
-        </h3>
-        {games.length === 0 ? (
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-zinc-300 font-semibold">
+            Games <span className="text-zinc-500 font-normal">({games.length})</span>
+          </h3>
+        </div>
+
+        <div className="relative mb-3">
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+          <input
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            placeholder="Filter games…"
+            className="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-9 pr-4 py-2.5 text-zinc-100 text-sm placeholder-zinc-600 focus:outline-none focus:border-violet-500 transition-colors"
+          />
+        </div>
+
+        {filtered.length === 0 ? (
           <div className="text-center py-12 text-zinc-500 text-sm">
-            No games for this console yet.
+            {games.length === 0 ? 'No games for this console yet.' : 'No games match your search.'}
           </div>
         ) : (
           <div className="grid grid-cols-3 gap-2">
-            {games.map(g => <GameCard key={g.id} game={g} />)}
+            {filtered.map(g => <GameCard key={g.id} game={g} />)}
           </div>
         )}
       </div>
