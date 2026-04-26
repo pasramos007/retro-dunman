@@ -18,7 +18,7 @@ export default function GameCard({ game }) {
       </div>
       <div className="px-2 py-1.5 flex items-start justify-between gap-1">
         <div className="min-w-0">
-          <p className="text-zinc-100 text-xs font-medium leading-tight truncate">{game.title}</p>
+          <p className={`text-xs font-medium leading-tight truncate ${game.console_id ? 'text-zinc-100' : 'text-red-400'}`}>{game.title}</p>
           {game.platform && <p className="text-zinc-500 text-xs truncate mt-0.5">{game.platform}</p>}
         </div>
         <Pencil size={11} className="text-zinc-600 shrink-0 mt-0.5" />
