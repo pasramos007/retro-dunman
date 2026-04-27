@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Trash2 } from 'lucide-react'
+import { ArrowLeft, Trash2, X, ZoomIn } from 'lucide-react'
 import { getConsole, getGame, getConsoles, updateConsole, updateGame, deleteConsole, deleteGame } from '../lib/api'
 
 export default function EditPage({ type }) {
@@ -13,6 +13,7 @@ export default function EditPage({ type }) {
   const [saving, setSaving] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [error, setError] = useState(null)
+  const [lightbox, setLightbox] = useState(false)
 
   useEffect(() => {
     const fetches = type === 'console'
@@ -92,11 +93,40 @@ export default function EditPage({ type }) {
 
       <div className="p-4 flex flex-col gap-4">
         {form.cover_url && (
-          <img
-            src={form.cover_url}
-            alt="Cover"
-            className={`mx-auto rounded-xl shadow-xl shadow-black/50 object-cover ${type === 'console' ? 'h-32 max-w-full object-contain' : 'w-28 aspect-[3/4]'}`}
-          />
+          <div className="relative mx-auto w-fit">
+            <img
+              src={form.cover_url}
+              alt="Cover"
+              onClick={() => setLightbox(true)}
+              className={`rounded-xl shadow-xl shadow-black/50 cursor-zoom-in ${type === 'console' ? 'h-32 max-w-full object-contain' : 'w-28 aspect-[3/4] object-cover'}`}
+            />
+            <button
+              onClick={() => setLightbox(true)}
+              className="absolute bottom-1.5 right-1.5 bg-black/60 hover:bg-black/80 text-white rounded-lg p-1 transition-colors"
+            >
+              <ZoomIn size={14} />
+            </button>
+          </div>
+        )}
+
+        {lightbox && (
+          <div
+            className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+            onClick={() => setLightbox(false)}
+          >
+            <button
+              onClick={() => setLightbox(false)}
+              className="absolute top-4 right-4 bg-zinc-800/80 hover:bg-zinc-700 text-white rounded-full p-2 transition-colors"
+            >
+              <X size={22} />
+            </button>
+            <img
+              src={form.cover_url}
+              alt="Cover"
+              className="max-w-full max-h-full object-contain p-6"
+              onClick={e => e.stopPropagation()}
+            />
+          </div>
         )}
 
         <Field label="Artwork URL" {...field('cover_url')} placeholder="https://…" />
